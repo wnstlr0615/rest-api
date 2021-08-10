@@ -11,10 +11,9 @@ class EventTest {
         Event event=Event.builder().build();
         assertThat(event).isNotNull();
     }
-    @Test()
+    @Test
     public void defaultEventStatus(){
         Event event = Event.builder().build();
-        assertThat(event.getEventStatus()).isEqualTo(EventStatus.DRAFT);
-        fail();
+        assertThat(event.getEventStatus()).isNull();
     }
 }
