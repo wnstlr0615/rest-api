@@ -2,16 +2,22 @@ package com.example.restapi.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,16 +25,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @WebMvcTest(controllers = {EventController.class})
-//@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class})
 class EventControllerTest {
     @Autowired
     MockMvc mvc;
     @Autowired
     ObjectMapper mapper;
+    @MockBean
+    EventRepository eventRepository;
     @Test
     public void createEvetnt() throws Exception {
         //EventDto event = createEventDto();
         Event event = createEvent();
+        event.setId(1);
+        Mockito.when(eventRepository.save(any(Event.class))).thenReturn(event);
         mvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
