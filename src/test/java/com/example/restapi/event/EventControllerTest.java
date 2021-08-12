@@ -27,12 +27,11 @@ class EventControllerTest {
 
     @Test
     public void createEvetnt() throws Exception {
-        Event event = createEvent();
-        event.setId(1);
+        EventDto eventDto = createEventDto();
         mvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
-                .content(mapper.writeValueAsString(event))
+                .content(mapper.writeValueAsString(eventDto))
         )
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
@@ -44,6 +43,17 @@ class EventControllerTest {
         ;
     }
 
+    @Test
+    public void createEventBadRequest() throws Exception {
+        Event event=createEvent();
+        mvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON)
+                .content(mapper.writeValueAsString(event))
+        )
+                .andExpect(status().isBadRequest() )
+        ;
+    }
     private EventDto createEventDto() {
         return EventDto.builder()
                 .name("Spring")

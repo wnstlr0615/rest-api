@@ -6,3 +6,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  jackson:
+    deserialization:
+      fail_on_unknown_properties: true
