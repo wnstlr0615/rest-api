@@ -3,6 +3,7 @@ package com.example.restapi.event;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,8 +23,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class EventController {
     private final EventRepository eventRepository;
     private final ModelMapper modelMapper;
+    private final EventValidator eventValidator;
     @PostMapping()
     public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto, BindingResult error){
+        if(error.hasErrors()){// @어노테이션을 사용한 에러 처리
+            return ResponseEntity.badRequest().body(error);
+        }
+        eventValidator.validate(eventDto, error);
         if(error.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
@@ -31,7 +37,11 @@ public class EventController {
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = eventRepository.save(event);
         event.setId(1);
-        URI createUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createUri).body(event);
+        EventResource eventResource=new EventResource(newEvent);
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        eventResource.add(selfLinkBuilder.withRel("update-event"));
+        URI createUri = selfLinkBuilder.toUri();
+        return ResponseEntity.created(createUri).body(eventResource);
     }
 }
