@@ -54,6 +54,18 @@ class EventControllerTest {
                 .andExpect(status().isBadRequest() )
         ;
     }
+    @Test
+    public void createEvent_Bad_Request_Empty_Input() throws Exception {
+        EventDto eventDto = EventDto.builder().build();
+        mvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(eventDto))
+        )
+                .andExpect(status().isBadRequest())
+                ;
+
+
+    }
     private EventDto createEventDto() {
         return EventDto.builder()
                 .name("Spring")
