@@ -169,11 +169,34 @@ class EventControllerControllerTest extends BaseControllerTest {
                 ;
     }
     @Test
-    @Description("30개의 이벤트를 10개씩 보여주는 테스트")
+    @Description("30개의 이벤트를 10개씩 보여주는 테스트 사용자 권한 x")
     public void queryEvent() throws Exception {
-
         IntStream.range(0,30).forEach(this::generateEvent);
         mvc.perform(get("/api/events")
+                .param("page", "1")
+                .param("size", "10")
+                .param("sort", "name,DESC")
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("_links.create-event").doesNotExist())
+                .andDo(document("query-events"))
+        //TODO 문서화 하기
+        ;
+    }
+    @Test
+    @Description("30개의 이벤트를 10개씩 보여주는 테스트")
+    public void queryEventWithAuthentication() throws Exception {
+        String username="joon@naver.com";
+        String password="1234";
+        IntStream.range(0,30).forEach(this::generateEvent);
+        mvc.perform(get("/api/events")
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken(username, password))
+
                 .param("page", "1")
                 .param("size", "10")
                 .param("sort", "name,DESC")
@@ -312,7 +335,7 @@ class EventControllerControllerTest extends BaseControllerTest {
         Account account = Account.builder()
                 .email(username)
                 .password(password)
-                .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
+                .roles(Set.of(AccountRole.ROLE_ADMIN, AccountRole.ROLE_USER))
                 .build();
         accountService.createUser(account);
         return account;

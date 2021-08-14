@@ -1,5 +1,8 @@
 package com.example.restapi.event;
 
+import com.example.restapi.account.Account;
+import com.example.restapi.account.CurrentUser;
+import com.example.restapi.account.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -12,6 +15,11 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -52,11 +60,19 @@ public class EventController {
         return ResponseEntity.created(createUri).body(eventResource);
     }
     @GetMapping("")
-    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler){
+    public ResponseEntity queryEvents(Pageable pageable,
+                                      PagedResourcesAssembler<Event> assembler
+                                      ,@CurrentUser Account account
+    ){
+
         Page<Event> events = eventRepository.findAll(pageable);
         PagedModel<EntityModel<Event>> entityModels = assembler.toModel(events, EventResource::new);
-        entityModels.add(linkTo(EventController.class).withRel("create-event"));
         entityModels.add(new Link("/docs/index.html#resources-events-list").withRel("profile"));
+
+        if(account!=null){
+            entityModels.add(linkTo(EventController.class).withRel("create-event"));
+        }
+
         return ResponseEntity.ok(entityModels);
     }
 

@@ -57,7 +57,7 @@ class AccountServiceTest {
         return Account.builder()
         .email(email)
         .password(passwordEncoder.encode(password))
-        .roles(Set.of(AccountRole.USER))
+        .roles(Set.of(AccountRole.ROLE_USER))
         .build();
     }
 }

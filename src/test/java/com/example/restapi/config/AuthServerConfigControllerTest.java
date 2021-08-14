@@ -51,7 +51,7 @@ class AuthServerConfigControllerTest extends BaseControllerTest {
         return Account.builder()
                 .email(username)
                 .password(password)
-                .roles(Set.of(AccountRole.USER))
+                .roles(Set.of(AccountRole.ROLE_USER))
                 .build();
     }
 }
