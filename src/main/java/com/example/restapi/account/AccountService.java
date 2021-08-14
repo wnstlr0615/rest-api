@@ -25,9 +25,10 @@ public class AccountService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void createUser(Account account){
+    public Account createUser(Account account){
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        accountRepository.save(account);
+        return accountRepository.save(account);
+
     }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
