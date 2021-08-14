@@ -1,6 +1,7 @@
 package com.example.restapi.config;
 
 import com.example.restapi.account.AccountService;
+import com.example.restapi.common.AppProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     TokenStore tokenStore;
     @Autowired
     AccountService accountService;
+    @Autowired
+    AppProperties appProperties;
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.passwordEncoder(passwordEncoder);
@@ -32,10 +35,10 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("myApp")
+                .withClient(appProperties.getClientId())
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("read", "write")
-                .secret(passwordEncoder.encode("pass"))
+                .secret(passwordEncoder.encode(appProperties.getClientSecret()))
                 .accessTokenValiditySeconds(10*60)
                 .refreshTokenValiditySeconds(6*10*60);
     }

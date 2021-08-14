@@ -3,6 +3,7 @@ package com.example.restapi.config;
 import com.example.restapi.account.Account;
 import com.example.restapi.account.AccountRole;
 import com.example.restapi.account.AccountService;
+import com.example.restapi.common.AppProperties;
 import com.example.restapi.common.BaseControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ class AuthServerConfigControllerTest extends BaseControllerTest {
     private AccountService accountService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AppProperties appProperties;
     @Test
     @Description("인증 토큰을 발급 받는 테스트")
     public void getAuthToken () throws Exception{
@@ -29,10 +32,8 @@ class AuthServerConfigControllerTest extends BaseControllerTest {
         Account account = createAccount(username, password);
         accountService.createUser(account);
         //given
-        String clientId="myApp";
-        String clientSecret="pass";
         mvc.perform(post("/oauth/token")
-                .with(httpBasic(clientId, clientSecret))
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
                 .param("username", username)
                 .param("password", password)
                 .param("grant_type", "password")

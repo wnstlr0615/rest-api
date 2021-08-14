@@ -19,3 +19,6 @@ logging:
     org:
       springframework:
         security: DEBUG
+my-app:
+  clientId: myApp
+  clientSecret: pass

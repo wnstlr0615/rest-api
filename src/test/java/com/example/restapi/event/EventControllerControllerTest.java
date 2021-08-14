@@ -3,6 +3,7 @@ package com.example.restapi.event;
 import com.example.restapi.account.Account;
 import com.example.restapi.account.AccountRole;
 import com.example.restapi.account.AccountService;
+import com.example.restapi.common.AppProperties;
 import com.example.restapi.common.BaseControllerTest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +42,8 @@ class EventControllerControllerTest extends BaseControllerTest {
     EventRepository eventRepository;
     @Autowired
     private AccountService accountService;
-
+    @Autowired
+    AppProperties appProperties;
     @Test
     @Description("정상적으로 이벤트를 생성하는 테스트")
     public void createEvetnt() throws Exception {
@@ -298,7 +300,7 @@ class EventControllerControllerTest extends BaseControllerTest {
         createAccount(username, password);
         // Given
         ResultActions perform = this.mvc.perform(post("/oauth/token")
-                .with(httpBasic("myApp", "pass"))
+                .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
                 .param("username", username)
                 .param("password", password)
                 .param("grant_type", "password"));
