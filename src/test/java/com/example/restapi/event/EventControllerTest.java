@@ -4,6 +4,7 @@ import com.example.restapi.common.RestDocsConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -173,6 +174,27 @@ class EventControllerTest {
                 .andDo(document("query-events"))
         //TODO 문서화 하기
                 ;
+    }
+    @Test
+    @Description("기존의 이벤트 하나 조회하기")
+    public void getEvent() throws Exception {
+        Event event = generateEvent(1);
+        event.setId(1l);
+        mvc.perform(get("/api/events/{id}", event.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-an-event"))
+                ;
+    }
+    @Test
+    @Description("없는 이벤트는 조회했을 때 404 응답받기")
+    public void getEvent404() throws Exception {
+        this.mvc.perform(get("/api/events/11883"))
+                .andExpect(status().isNotFound());
     }
     private Event generateEvent(int index) {
         Event event = Event.builder()

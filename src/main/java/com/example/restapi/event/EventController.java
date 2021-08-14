@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -40,7 +41,7 @@ public class EventController {
 
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = eventRepository.save(event);
-        event.setId(1);
+        event.setId(1l);
         EventResource eventResource=new EventResource(newEvent);
         WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
         eventResource.add(linkTo(EventController.class).withRel("query-events"));
@@ -56,6 +57,16 @@ public class EventController {
         entityModels.add(linkTo(EventController.class).withRel("create-event"));
         entityModels.add(linkTo(EventController.class).slash("profile").withRel("profile"));
         return ResponseEntity.ok(entityModels);
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity getEvent(@PathVariable("id") Long eventId){
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if(eventOptional.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        EventResource eventResource = new EventResource(eventOptional.get());
+        eventResource.add(linkTo(EventController.class).slash("profile").withRel("profile"));
+        return ResponseEntity.ok(eventResource);
     }
 }
