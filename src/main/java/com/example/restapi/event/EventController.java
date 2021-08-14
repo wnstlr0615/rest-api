@@ -2,16 +2,18 @@ package com.example.restapi.event;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -20,7 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/events", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaTypes.HAL_JSON_VALUE)
+@RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
 public class EventController {
     private final EventRepository eventRepository;
     private final ModelMapper modelMapper;
@@ -46,5 +48,14 @@ public class EventController {
         eventResource.add(new Link("http://localhost:63342/Rest-Api/target/classes/static/docs/index.html?_ijt=e3m094i57ed7dsdj570br7mbej#resources-events-create").withRel("profile"));
         URI createUri = selfLinkBuilder.toUri();
         return ResponseEntity.created(createUri).body(eventResource);
+    }
+    @GetMapping("")
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler){
+        Page<Event> events = eventRepository.findAll(pageable);
+        PagedModel<EntityModel<Event>> entityModels = assembler.toModel(events, EventResource::new);
+        entityModels.add(linkTo(EventController.class).withRel("create-event"));
+        entityModels.add(linkTo(EventController.class).slash("profile").withRel("profile"));
+        return ResponseEntity.ok(entityModels);
+
     }
 }
