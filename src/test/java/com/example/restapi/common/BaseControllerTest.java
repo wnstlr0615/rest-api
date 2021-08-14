@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import({RestDocsConfiguration.class})
 @ActiveProfiles("test")
 @Disabled
-public class BaseTest {
+public class BaseControllerTest {
     @Autowired
     protected MockMvc mvc;
     @Autowired

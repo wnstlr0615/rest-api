@@ -47,11 +47,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
-    @Override
+    /*@Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/api/**").authenticated()
         .anyRequest().authenticated();
         http.httpBasic();
         http.formLogin();
-    }
+    }*/
 }
