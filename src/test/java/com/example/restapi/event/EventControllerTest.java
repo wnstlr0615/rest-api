@@ -1,5 +1,6 @@
 package com.example.restapi.event;
 
+import com.example.restapi.common.BaseTest;
 import com.example.restapi.common.RestDocsConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,25 +36,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@SpringBootTest
-@Import({RestDocsConfiguration.class})
-@ActiveProfiles("test")
-class EventControllerTest {
-    @Autowired
-    MockMvc mvc;
-    @Autowired
-    ObjectMapper mapper;
+
+class EventControllerTest extends BaseTest {
+
     @Autowired
     EventRepository eventRepository;
-    @Autowired
-    ModelMapper modelMapper;
+
     @Test
     @Description("정상적으로 이벤트를 생성하는 테스트")
     public void createEvetnt() throws Exception {
         EventDto eventDto = createEventDto();
-        mvc.perform(post("/api/events")
+        this.mvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaTypes.HAL_JSON)
                 .content(mapper.writeValueAsString(eventDto))
