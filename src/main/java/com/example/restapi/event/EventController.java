@@ -2,6 +2,7 @@ package com.example.restapi.event;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ public class EventController {
     private final EventRepository eventRepository;
     private final ModelMapper modelMapper;
     private final EventValidator eventValidator;
+
     @PostMapping()
     public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto, BindingResult error){
         if(error.hasErrors()){// @어노테이션을 사용한 에러 처리
@@ -41,6 +43,7 @@ public class EventController {
         WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
         eventResource.add(linkTo(EventController.class).withRel("query-events"));
         eventResource.add(selfLinkBuilder.withRel("update-event"));
+        eventResource.add(new Link("http://localhost:63342/Rest-Api/target/classes/static/docs/index.html?_ijt=e3m094i57ed7dsdj570br7mbej#resources-events-create").withRel("profile"));
         URI createUri = selfLinkBuilder.toUri();
         return ResponseEntity.created(createUri).body(eventResource);
     }

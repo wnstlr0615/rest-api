@@ -1,3 +1,4 @@
+
 spring:
   jpa:
     show-sql: true
@@ -6,11 +7,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
   jackson:
     deserialization:
       fail_on_unknown_properties: true
   datasource:
-    username: postgres
-    password: 3621
-    url: jdbc:postgresql://localhost:5432/postgres
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    hikari:
+      jdbc-url: jdbc:h2:mem:testdb
