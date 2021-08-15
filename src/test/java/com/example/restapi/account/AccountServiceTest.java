@@ -2,6 +2,7 @@ package com.example.restapi.account;
 
 import org.hamcrest.Matchers;
 import org.junit.Rule;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ class AccountServiceTest {
         assertThat(userDetails.getPassword()).isNotEqualTo(password);
     }
     @Test
-    @Description("UserNameNotFoundException 예외 발생 확인")
+    @DisplayName("UserNameNotFoundException 예외 발생 확인")
     public void userNameNotFoundExceptionCheck(){
         String username = "hell@naver.com";
 //        expectedException.expect(UsernameNotFoundException.class);

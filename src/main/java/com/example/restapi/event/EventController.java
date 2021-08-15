@@ -39,7 +39,7 @@ public class EventController {
     private final EventValidator eventValidator;
 
     @PostMapping()
-    public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto, BindingResult error){
+    public ResponseEntity<?> createEvent(@RequestBody @Valid EventDto eventDto, BindingResult error, @CurrentUser Account account){
         if(error.hasErrors()){// @어노테이션을 사용한 에러 처리
             return ResponseEntity.badRequest().body(error);
         }
@@ -47,10 +47,13 @@ public class EventController {
         if(error.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
+        if(account==null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = eventRepository.save(event);
-        event.setId(1l);
+        event.setAccount(account);
         EventResource eventResource=new EventResource(newEvent);
         WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
         eventResource.add(linkTo(EventController.class).withRel("query-events"));

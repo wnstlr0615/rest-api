@@ -1,10 +1,11 @@
 package com.example.restapi.event;
 
 import com.example.restapi.account.Account;
+import com.example.restapi.account.AccountSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,6 +34,7 @@ public class Event {
     private boolean free;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonSerialize(using = AccountSerializer.class)
     private Account account;
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus =EventStatus.DRAFT;

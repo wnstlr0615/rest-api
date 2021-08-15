@@ -45,7 +45,7 @@ class EventControllerControllerTest extends BaseControllerTest {
     @Autowired
     AppProperties appProperties;
     @Test
-    @Description("정상적으로 이벤트를 생성하는 테스트")
+    @DisplayName("정상적으로 이벤트를 생성하는 테스트")
     public void createEvetnt() throws Exception {
         String username="joon@naver.com";
         String password="1234";
@@ -56,6 +56,7 @@ class EventControllerControllerTest extends BaseControllerTest {
                 .accept(MediaTypes.HAL_JSON)
                 .content(mapper.writeValueAsString(eventDto))
         )
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON.toString()))
@@ -121,7 +122,7 @@ class EventControllerControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @Description("입력 객체와 맞지않는 유형에 데이터 입력시 에러 처리")
+    @DisplayName("입력 객체와 맞지않는 유형에 데이터 입력시 에러 처리")
     public void createEventBadRequest() throws Exception {
         String username="joon@naver.com";
         String password="1234";
@@ -136,7 +137,7 @@ class EventControllerControllerTest extends BaseControllerTest {
         ;
     }
     @Test
-    @Description("빈 객체 입력시 에러처리")
+    @DisplayName("빈 객체 입력시 에러처리")
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
         String username="joon@naver.com";
         String password="1234";
@@ -152,7 +153,7 @@ class EventControllerControllerTest extends BaseControllerTest {
 
     }
     @Test
-    @Description("객체가  Valid 검증시 Error 값 반환 확인")
+    @DisplayName("객체가  Valid 검증시 Error 값 반환 확인")
     public void createEvent_Bad_Request_Body_Errors_Check() throws Exception {
         EventDto eventDto = EventDto.builder().build();
         String username="joon@naver.com";
@@ -169,7 +170,7 @@ class EventControllerControllerTest extends BaseControllerTest {
                 ;
     }
     @Test
-    @Description("30개의 이벤트를 10개씩 보여주는 테스트 사용자 권한 x")
+    @DisplayName("30개의 이벤트를 10개씩 보여주는 테스트 사용자 권한 x")
     public void queryEvent() throws Exception {
         IntStream.range(0,30).forEach(this::generateEvent);
         mvc.perform(get("/api/events")
@@ -189,7 +190,7 @@ class EventControllerControllerTest extends BaseControllerTest {
         ;
     }
     @Test
-    @Description("30개의 이벤트를 10개씩 보여주는 테스트")
+    @DisplayName("30개의 이벤트를 10개씩 보여주는 테스트")
     public void queryEventWithAuthentication() throws Exception {
         String username="joon@naver.com";
         String password="1234";
@@ -213,7 +214,7 @@ class EventControllerControllerTest extends BaseControllerTest {
                 ;
     }
     @Test
-    @Description("기존의 이벤트 하나 조회하기")
+    @DisplayName("기존의 이벤트 하나 조회하기")
     public void getEvent() throws Exception {
         Event event = generateEvent(1);
         mvc.perform(get("/api/events/{id}", event.getId())
@@ -229,7 +230,7 @@ class EventControllerControllerTest extends BaseControllerTest {
                 ;
     }
     @Test
-    @Description("없는 이벤트는 조회했을 때 404 응답받기")
+    @DisplayName("없는 이벤트는 조회했을 때 404 응답받기")
     public void getEvent404() throws Exception {
         this.mvc.perform(get("/api/events/11883"))
                 .andExpect(status().isNotFound());
